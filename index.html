@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Emoji 示例（无Vue依赖）</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .demo-container {
+      margin: 20px 0;
+    }
+    #selectedEmoji {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      display: none;
+    }
+    #selectedEmoji.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Telegram Emoji 示例</h1>
+  <p>无需依赖Vue，直接使用：</p>
+
+  <!-- 表情选择器容器 -->
+  <div class="demo-container" id="emojiContainer"></div>
+
+  <!-- 选中表情展示区 -->
+  <div id="selectedEmoji">
+    <h3>已选择：</h3>
+    <img id="emojiImg" style="width: 60px; height: 60px;" src="" alt="">
+    <p>名称：<span id="emojiName"></span></p>
+    <p>编码：<span id="emojiCode"></span></p>
+  </div>
+
+  <!-- 引入构建后的库（开发环境用vite的路径，生产环境用dist路径） -->
+  <script src="https://makeitso.fun/telegram-emoji/static/js/telegram-emoji.umd.js"></script>
+  <script>
+    // 等待库加载完成
+    window.onload = () => {
+      // 从全局变量获取API（开发环境用import，生产环境用全局变量）
+      const { renderEmojiPicker } = window.TelegramEmoji;
+
+      // 渲染表情选择器
+      const destroy = renderEmojiPicker({
+        container: '#emojiContainer', // 容器选择器
+        title: 'Telegram 表情' // 标题
+      }, (emoji) => {
+        // 选择表情后的回调
+        const selectedEl = document.getElementById('selectedEmoji');
+        const imgEl = document.getElementById('emojiImg');
+        const nameEl = document.getElementById('emojiName');
+        const codeEl = document.getElementById('emojiCode');
+
+        imgEl.src = emoji.url;
+        imgEl.alt = emoji.name;
+        nameEl.textContent = emoji.name;
+        codeEl.textContent = emoji.code;
+        selectedEl.classList.add('visible');
+      });
+
+      // 如需销毁选择器，可调用：destroy()
+    };
+  </script>
+</body>
+</html>
