@@ -1,72 +1,707 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Emoji 示例（无Vue依赖）</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    .demo-container {
-      margin: 20px 0;
-    }
-    #selectedEmoji {
-      margin-top: 20px;
-      padding: 15px;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      display: none;
-    }
-    #selectedEmoji.visible {
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Emoji</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 20px 0 30px;
+            font-size: 24px;
+        }
+
+        .emoji-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .emoji-card {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .emoji-img {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 8px;
+            display: block;
+            object-contain;
+        }
+
+        .emoji-name {
+            font-size: 11px;
+            color: #666;
+            text-transform: capitalize;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+    </style>
 </head>
 <body>
-  <h1>Telegram Emoji 示例</h1>
-  <p>无需依赖Vue，直接使用：</p>
+    <h1>Telegram Emoji</h1>
+    <div class="emoji-container" id="emojiContainer"></div>
 
-  <!-- 表情选择器容器 -->
-  <div class="demo-container" id="emojiContainer"></div>
+    <script>
+        const emojis = [
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grinning-face_1f600.webp',
+                name: 'grinning-face',
+                code: '1f600'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grinning-face-with-big-eyes_1f603.webp',
+                name: 'grinning-face-with-big-eyes',
+                code: '1f603'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grinning-face-with-smiling-eyes_1f604.webp',
+                name: 'grinning-face-with-smiling-eyes',
+                code: '1f604'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/beaming-face-with-smiling-eyes_1f601.webp',
+                name: 'beaming-face-with-smiling-eyes',
+                code: '1f601'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grinning-squinting-face_1f606.webp',
+                name: 'grinning-squinting-face',
+                code: '1f606'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grinning-face-with-sweat_1f605.webp',
+                name: 'grinning-face-with-sweat',
+                code: '1f605'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/rolling-on-the-floor-laughing_1f923.webp',
+                name: 'rolling-on-the-floor-laughing',
+                code: '1f923'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-tears-of-joy_1f602.webp',
+                name: 'face-with-tears-of-joy',
+                code: '1f602'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/slightly-smiling-face_1f642.webp',
+                name: 'slightly-smiling-face',
+                code: '1f642'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/upside-down-face_1f643.webp',
+                name: 'upside-down-face',
+                code: '1f643'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/melting-face_1fae0.webp',
+                name: 'melting-face',
+                code: '1fae0'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/winking-face_1f609.webp',
+                name: 'winking-face',
+                code: '1f609'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-face-with-smiling-eyes_1f60a.webp',
+                name: 'smiling-face-with-smiling-eyes',
+                code: '1f60a'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-face-with-halo_1f607.webp',
+                name: 'smiling-face-with-halo',
+                code: '1f607'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-face-with-hearts_1f970.webp',
+                name: 'smiling-face-with-hearts',
+                code: '1f970'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/star-struck_1f929.webp',
+                name: 'star-struck',
+                code: '1f929'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-blowing-a-kiss_1f618.webp',
+                name: 'face-blowing-a-kiss',
+                code: '1f618'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/kissing-face_1f617.webp',
+                name: 'kissing-face',
+                code: '1f617'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-face_263a-fe0f.webp',
+                name: 'smiling-face',
+                code: '263a-fe0f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/kissing-face-with-closed-eyes_1f61a.webp',
+                name: 'kissing-face-with-closed-eyes',
+                code: '1f61a'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-face-with-tear_1f972.webp',
+                name: 'smiling-face-with-tear',
+                code: '1f972'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-savoring-food_1f60b.webp',
+                name: 'face-savoring-food',
+                code: '1f60b'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-tongue_1f61b.webp',
+                name: 'face-with-tongue',
+                code: '1f61b'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/winking-face-with-tongue_1f61c.webp',
+                name: 'winking-face-with-tongue',
+                code: '1f61c'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/zany-face_1f92a.webp',
+                name: 'zany-face',
+                code: '1f92a'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/squinting-face-with-tongue_1f61d.webp',
+                name: 'squinting-face-with-tongue',
+                code: '1f61d'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/money-mouth-face_1f911.webp',
+                name: 'money-mouth-face',
+                code: '1f911'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/hugging-face_1f917.webp',
+                name: 'hugging-face',
+                code: '1f917'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-hand-over-mouth_1f92d.webp',
+                name: 'face-with-hand-over-mouth',
+                code: '1f92d'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-open-eyes-and-hand-over-mouth_1fae2.webp',
+                name: 'face-with-open-eyes-and-hand-over-mouth',
+                code: '1fae2'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-peeking-eye_1fae3.webp',
+                name: 'face-with-peeking-eye',
+                code: '1fae3'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/shushing-face_1f92b.webp',
+                name: 'shushing-face',
+                code: '1f92b'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/thinking-face_1f914.webp',
+                name: 'thinking-face',
+                code: '1f914'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/saluting-face_1fae1.webp',
+                name: 'saluting-face',
+                code: '1fae1'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/zipper-mouth-face_1f910.webp',
+                name: 'zipper-mouth-face',
+                code: '1f910'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-raised-eyebrow_1f928.webp',
+                name: 'face-with-raised-eyebrow',
+                code: '1f928'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/neutral-face_1f610.webp',
+                name: 'neutral-face',
+                code: '1f610'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/expressionless-face_1f611.webp',
+                name: 'expressionless-face',
+                code: '1f611'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-without-mouth_1f636.webp',
+                name: 'face-without-mouth',
+                code: '1f636'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/dotted-line-face_1fae5.webp',
+                name: 'dotted-line-face',
+                code: '1fae5'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-in-clouds_1f636-200d-1f32b-fe0f.webp',
+                name: 'face-in-clouds',
+                code: '1f636-200d-1f32b-fe0f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smirking-face_1f60f.webp',
+                name: 'smirking-face',
+                code: '1f60f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/unamused-face_1f612.webp',
+                name: 'unamused-face',
+                code: '1f612'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-rolling-eyes_1f644.webp',
+                name: 'face-with-rolling-eyes',
+                code: '1f644'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grimacing-face_1f62c.webp',
+                name: 'grimacing-face',
+                code: '1f62c'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-exhaling_1f62e-200d-1f4a8.webp',
+                name: 'face-exhaling',
+                code: '1f62e-200d-1f4a8'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/lying-face_1f925.webp',
+                name: 'lying-face',
+                code: '1f925'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/shaking-face_1fae8.webp',
+                name: 'shaking-face',
+                code: '1fae8'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/relieved-face_1f60c.webp',
+                name: 'relieved-face',
+                code: '1f60c'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/pensive-face_1f614.webp',
+                name: 'pensive-face',
+                code: '1f614'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/sleepy-face_1f62a.webp',
+                name: 'sleepy-face',
+                code: '1f62a'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/drooling-face_1f924.webp',
+                name: 'drooling-face',
+                code: '1f924'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/sleeping-face_1f634.webp',
+                name: 'sleeping-face',
+                code: '1f634'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-medical-mask_1f637.webp',
+                name: 'face-with-medical-mask',
+                code: '1f637'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-thermometer_1f912.webp',
+                name: 'face-with-thermometer',
+                code: '1f912'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-head-bandage_1f915.webp',
+                name: 'face-with-head-bandage',
+                code: '1f915'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/nauseated-face_1f922.webp',
+                name: 'nauseated-face',
+                code: '1f922'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-vomiting_1f92e.webp',
+                name: 'face-vomiting',
+                code: '1f92e'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/sneezing-face_1f927.webp',
+                name: 'sneezing-face',
+                code: '1f927'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/hot-face_1f975.webp',
+                name: 'hot-face',
+                code: '1f975'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/cold-face_1f976.webp',
+                name: 'cold-face',
+                code: '1f976'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/woozy-face_1f974.webp',
+                name: 'woozy-face',
+                code: '1f974'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/dizzy-face_1f635.webp',
+                name: 'dizzy-face',
+                code: '1f635'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-spiral-eyes_1f635-200d-1f4ab.webp',
+                name: 'face-with-spiral-eyes',
+                code: '1f635-200d-1f4ab'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/exploding-head_1f92f.webp',
+                name: 'exploding-head',
+                code: '1f92f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/cowboy-hat-face_1f920.webp',
+                name: 'cowboy-hat-face',
+                code: '1f920'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/partying-face_1f973.webp',
+                name: 'partying-face',
+                code: '1f973'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/disguised-face_1f978.webp',
+                name: 'disguised-face',
+                code: '1f978'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-face-with-sunglasses_1f60e.webp',
+                name: 'smiling-face-with-sunglasses',
+                code: '1f60e'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/nerd-face_1f913.webp',
+                name: 'nerd-face',
+                code: '1f913'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-monocle_1f9d0.webp',
+                name: 'face-with-monocle',
+                code: '1f9d0'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/confused-face_1f615.webp',
+                name: 'confused-face',
+                code: '1f615'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-diagonal-mouth_1fae4.webp',
+                name: 'face-with-diagonal-mouth',
+                code: '1fae4'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/worried-face_1f61f.webp',
+                name: 'worried-face',
+                code: '1f61f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/slightly-frowning-face_1f641.webp',
+                name: 'slightly-frowning-face',
+                code: '1f641'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/frowning-face_2639-fe0f.webp',
+                name: 'frowning-face',
+                code: '2639-fe0f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-open-mouth_1f62e.webp',
+                name: 'face-with-open-mouth',
+                code: '1f62e'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/hushed-face_1f62f.webp',
+                name: 'hushed-face',
+                code: '1f62f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/astonished-face_1f632.webp',
+                name: 'astonished-face',
+                code: '1f632'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/flushed-face_1f633.webp',
+                name: 'flushed-face',
+                code: '1f633'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/pleading-face_1f97a.webp',
+                name: 'pleading-face',
+                code: '1f97a'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-holding-back-tears_1f979.webp',
+                name: 'face-holding-back-tears',
+                code: '1f979'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/frowning-face-with-open-mouth_1f626.webp',
+                name: 'frowning-face-with-open-mouth',
+                code: '1f626'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/anguished-face_1f627.webp',
+                name: 'anguished-face',
+                code: '1f627'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/fearful-face_1f628.webp',
+                name: 'fearful-face',
+                code: '1f628'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/anxious-face-with-sweat_1f630.webp',
+                name: 'anxious-face-with-sweat',
+                code: '1f630'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/sad-but-relieved-face_1f625.webp',
+                name: 'sad-but-relieved-face',
+                code: '1f625'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/crying-face_1f622.webp',
+                name: 'crying-face',
+                code: '1f622'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/loudly-crying-face_1f62d.webp',
+                name: 'loudly-crying-face',
+                code: '1f62d'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-screaming-in-fear_1f631.webp',
+                name: 'face-screaming-in-fear',
+                code: '1f631'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/confounded-face_1f616.webp',
+                name: 'confounded-face',
+                code: '1f616'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/persevering-face_1f623.webp',
+                name: 'persevering-face',
+                code: '1f623'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/disappointed-face_1f61e.webp',
+                name: 'disappointed-face',
+                code: '1f61e'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/downcast-face-with-sweat_1f613.webp',
+                name: 'downcast-face-with-sweat',
+                code: '1f613'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/weary-face_1f629.webp',
+                name: 'weary-face',
+                code: '1f629'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/tired-face_1f62b.webp',
+                name: 'tired-face',
+                code: '1f62b'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/yawning-face_1f971.webp',
+                name: 'yawning-face',
+                code: '1f971'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-steam-from-nose_1f624.webp',
+                name: 'face-with-steam-from-nose',
+                code: '1f624'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/pouting-face_1f621.webp',
+                name: 'pouting-face',
+                code: '1f621'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/angry-face_1f620.webp',
+                name: 'angry-face',
+                code: '1f620'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/face-with-symbols-on-mouth_1f92c.webp',
+                name: 'face-with-symbols-on-mouth',
+                code: '1f92c'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-face-with-horns_1f608.webp',
+                name: 'smiling-face-with-horns',
+                code: '1f608'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/angry-face-with-horns_1f47f.webp',
+                name: 'angry-face-with-horns',
+                code: '1f47f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/skull_1f480.webp',
+                name: 'skull',
+                code: '1f480'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/skull-and-crossbones_2620-fe0f.webp',
+                name: 'skull-and-crossbones',
+                code: '2620-fe0f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/pile-of-poo_1f4a9.webp',
+                name: 'pile-of-poo',
+                code: '1f4a9'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/clown-face_1f921.webp',
+                name: 'clown-face',
+                code: '1f921'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/ogre_1f479.webp',
+                name: 'ogre',
+                code: '1f479'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/goblin_1f47a.webp',
+                name: 'goblin',
+                code: '1f47a'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/ghost_1f47b.webp',
+                name: 'ghost',
+                code: '1f47b'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/alien_1f47d.webp',
+                name: 'alien',
+                code: '1f47d'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/alien-monster_1f47e.webp',
+                name: 'alien-monster',
+                code: '1f47e'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/robot_1f916.webp',
+                name: 'robot',
+                code: '1f916'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grinning-cat_1f63a.webp',
+                name: 'grinning-cat',
+                code: '1f63a'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/grinning-cat-with-smiling-eyes_1f638.webp',
+                name: 'grinning-cat-with-smiling-eyes',
+                code: '1f638'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/cat-with-tears-of-joy_1f639.webp',
+                name: 'cat-with-tears-of-joy',
+                code: '1f639'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/smiling-cat-with-heart-eyes_1f63b.webp',
+                name: 'smiling-cat-with-heart-eyes',
+                code: '1f63b'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/cat-with-wry-smile_1f63c.webp',
+                name: 'cat-with-wry-smile',
+                code: '1f63c'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/kissing-cat_1f63d.webp',
+                name: 'kissing-cat',
+                code: '1f63d'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/weary-cat_1f640.webp',
+                name: 'weary-cat',
+                code: '1f640'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/crying-cat_1f63f.webp',
+                name: 'crying-cat',
+                code: '1f63f'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/pouting-cat_1f63e.webp',
+                name: 'pouting-cat',
+                code: '1f63e'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/see-no-evil-monkey_1f648.webp',
+                name: 'see-no-evil-monkey',
+                code: '1f648'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/hear-no-evil-monkey_1f649.webp',
+                name: 'hear-no-evil-monkey',
+                code: '1f649'
+            },
+            {
+                url: 'https://raw.githubusercontent.com/makeitsofun/telegram-emoji/refs/heads/main/static/compress/speak-no-evil-monkey_1f64a.webp',
+                name: 'speak-no-evil-monkey',
+                code: '1f64a'
+            }
+        ];
 
-  <!-- 选中表情展示区 -->
-  <div id="selectedEmoji">
-    <h3>已选择：</h3>
-    <img id="emojiImg" style="width: 60px; height: 60px;" src="" alt="">
-    <p>名称：<span id="emojiName"></span></p>
-    <p>编码：<span id="emojiCode"></span></p>
-  </div>
-
-  <!-- 引入构建后的库（开发环境用vite的路径，生产环境用dist路径） -->
-  <script src="https://makeitso.fun/telegram-emoji/static/js/telegram-emoji.umd.js"></script>
-  <script>
-    // 等待库加载完成
-    window.onload = () => {
-      // 从全局变量获取API（开发环境用import，生产环境用全局变量）
-      const { renderEmojiPicker } = window.TelegramEmoji;
-
-      // 渲染表情选择器
-      const destroy = renderEmojiPicker({
-        container: '#emojiContainer', // 容器选择器
-        title: 'Telegram 表情' // 标题
-      }, (emoji) => {
-        // 选择表情后的回调
-        const selectedEl = document.getElementById('selectedEmoji');
-        const imgEl = document.getElementById('emojiImg');
-        const nameEl = document.getElementById('emojiName');
-        const codeEl = document.getElementById('emojiCode');
-
-        imgEl.src = emoji.url;
-        imgEl.alt = emoji.name;
-        nameEl.textContent = emoji.name;
-        codeEl.textContent = emoji.code;
-        selectedEl.classList.add('visible');
-      });
-
-      // 如需销毁选择器，可调用：destroy()
-    };
-  </script>
+        const container = document.getElementById('emojiContainer');
+        emojis.forEach(emoji => {
+            const card = document.createElement('div');
+            card.className = 'emoji-card';
+            
+            card.innerHTML = `
+                <img src="${emoji.url}" alt="${emoji.name}" class="emoji-img" loading="lazy">
+                <p class="emoji-name">${emoji.name.replace(/-/g, ' ')}</p>
+            `;
+            
+            container.appendChild(card);
+        });
+    </script>
 </body>
 </html>
